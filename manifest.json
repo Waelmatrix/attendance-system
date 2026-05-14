@@ -1,7 +1,8 @@
 {
   "name": "WE Attendance System",
   "short_name": "WE Attendance",
-  "start_url": "/attendance-system/",
+  "start_url": "./",
+  "scope": "/attendance-system/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#d4001a",
