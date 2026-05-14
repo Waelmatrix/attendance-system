@@ -11,6 +11,11 @@
 <meta name="theme-color" content="#d4001a">
 
 <link rel="apple-touch-icon" href="icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
     
 <style>
 
