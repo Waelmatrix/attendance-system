@@ -43,13 +43,13 @@ let locations = [
 },
 
 {
-    name: "سنترال المنيره ",
+    name: "سنترال المنيرة",
     lat: 25.617703,
     lng: 30.645818
 },
 
 {
-    name: "wael   ",
+    name: "موقع wael",
     lat: 25.457426,
     lng: 30.536133
 }
@@ -67,11 +67,12 @@ function(position){
 let lat = position.coords.latitude;
 let lng = position.coords.longitude;
 
-let allowed = false;
-
 /* =========================
-   فحص كل المواقع
+   إيجاد أقرب موقع
 ========================= */
+
+let minDistance = Infinity;
+let nearest = null;
 
 for(let i = 0; i < locations.length; i++){
 
@@ -82,18 +83,20 @@ locations[i].lat,
 locations[i].lng
 );
 
-if(distance <= 200){
-    allowed = true;
-    break;
+if(distance < minDistance){
+    minDistance = distance;
+    nearest = locations[i];
 }
+
+console.log(locations[i].name, distance);
 
 }
 
 /* =========================
-   خارج كل المواقع
+   التحقق النهائي
 ========================= */
 
-if(!allowed){
+if(minDistance > 200){
 
 document.getElementById("status").innerHTML =
 "أنت خارج نطاق مواقع العمل";
@@ -101,6 +104,9 @@ document.getElementById("status").innerHTML =
 return;
 
 }
+
+document.getElementById("status").innerHTML =
+"تم تسجيلك في: " + nearest.name;
 
 /* =========================
    فتح الفورم
@@ -153,9 +159,7 @@ Math.sin(dLon/2);
 
 let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-let d = R * c;
-
-return d * 1000;
+return c * R * 1000;
 
 }
 
