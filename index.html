@@ -72,6 +72,7 @@ button:hover{
     margin-top:20px;
     color:#555;
     font-size:14px;
+    line-height:1.6;
 }
 
 </style>
@@ -171,9 +172,11 @@ let lat = position.coords.latitude;
 let lng = position.coords.longitude;
 
 let allowed = false;
+let nearestName = "";
+let nearestDistance = Infinity;
 
 /* =========================
-   فحص كل المواقع
+   حساب أقرب موقع
 ========================= */
 
 for(let i = 0; i < locations.length; i++){
@@ -185,40 +188,45 @@ locations[i].lat,
 locations[i].lng
 );
 
+if(distance < nearestDistance){
+    nearestDistance = distance;
+    nearestName = locations[i].name;
+}
+
 if(distance <= 300){
     allowed = true;
-    break;
 }
 
 }
 
 /* =========================
-   خارج النطاق
+   عرض الحالة للمستخدم
 ========================= */
+
+let statusText =
+"📍 موقعك الحالي: " + nearestName +
+"<br>📏 المسافة: " + Math.round(nearestDistance) + " متر";
 
 if(!allowed){
-
-document.getElementById("status").innerHTML =
-"أنت خارج نطاق مواقع العمل";
-
+statusText += "<br>❌ أنت خارج نطاق العمل";
+document.getElementById("status").innerHTML = statusText;
 return;
-
+}else{
+statusText += "<br>✅ داخل نطاق العمل";
 }
 
+document.getElementById("status").innerHTML = statusText;
+
 /* =========================
-   نجاح
+   فتح الفورم
 ========================= */
 
-document.getElementById("status").innerHTML =
-"تم تسجيل الحضور بنجاح";
-
-/* فتح الفورم */
 let formURL =
 "https://docs.google.com/forms/d/e/1FAIpQLSd5YCyFwOdjrJUIGWk7JsCTzV8lIhqvulKGR21ehL-p2IzQ6w/viewform";
 
 setTimeout(()=>{
 window.location.href = formURL;
-}, 800);
+}, 1500);
 
 },
 
