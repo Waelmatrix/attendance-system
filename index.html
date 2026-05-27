@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-    
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>تسجيل الحضور</title>
+
 <link rel="manifest" href="manifest.json">
 
 <meta name="theme-color" content="#d4001a">
 
 <link rel="apple-touch-icon" href="icon.png">
+
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+    navigator.serviceWorker.register('./sw.js');
 }
 </script>
-    
+
 <style>
 
 body{
@@ -41,6 +44,15 @@ body{
 h2{
     margin-bottom:20px;
     color:#333;
+}
+
+select{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
 }
 
 button{
@@ -74,8 +86,20 @@ button:hover{
 
 <h2>تسجيل الحضور</h2>
 
+<select id="attendanceType">
+
+<option value="attendance">حضور</option>
+
+<option value="leave">إجازة</option>
+
+<option value="rest">بدل راحة</option>
+
+<option value="mission">مأمورية</option>
+
+</select>
+
 <button onclick="sendLocation()">
-تسجيل الموقع
+تسجيل
 </button>
 
 <div id="status"></div>
@@ -86,8 +110,33 @@ button:hover{
 
 function sendLocation(){
 
+let type =
+document.getElementById("attendanceType").value;
+
 document.getElementById("status").innerHTML =
-"جارى تحديد الموقع...";
+"جارى التنفيذ...";
+
+/* =========================
+   لو إجازة أو مأمورية
+========================= */
+
+if(
+type === "leave" ||
+type === "rest" ||
+type === "mission"
+){
+
+let formURL =
+"https://docs.google.com/forms/d/e/1FAIpQLSd5YCyFwOdjrJUIGWk7JsCTzV8lIhqvulKGR21ehL-p2IzQ6w/viewform";
+
+window.location.href = formURL;
+
+return;
+}
+
+/* =========================
+   حضور = لازم GPS
+========================= */
 
 navigator.geolocation.getCurrentPosition(
 
@@ -130,10 +179,20 @@ window.location.href = formURL;
 
 },
 
-function(){
+function(error){
+
+if(error.code === 1){
 
 document.getElementById("status").innerHTML =
 "يجب السماح بالموقع GPS";
+
+}
+else{
+
+document.getElementById("status").innerHTML =
+"حدث خطأ فى تحديد الموقع";
+
+}
 
 }
 
@@ -141,7 +200,9 @@ document.getElementById("status").innerHTML =
 
 }
 
-/* حساب المسافة */
+/* =========================
+   حساب المسافة
+========================= */
 
 function getDistanceFromLatLonInM(
 lat1,
