@@ -7,7 +7,7 @@ document.getElementById("status").innerHTML =
 "جارى التنفيذ...";
 
 /* =========================
-   إجازة / مأمورية / بدل راحة
+   لو إجازة أو مأمورية
 ========================= */
 
 if(
@@ -25,39 +25,7 @@ return;
 }
 
 /* =========================
-   المواقع المسموح بها
-========================= */
-
-let locations = [
-
-{
-    name: "السنترال الرئيسي",
-    lat: 25.447794,
-    lng: 30.544412
-},
-
-{
-    name: "سنترال باريس",
-    lat: 24.674591,
-    lng: 30.605435
-},
-
-{
-    name: "سنترال المنيرة",
-    lat: 25.617703,
-    lng: 30.645818
-},
-
-{
-    name: "موقع wael",
-    lat: 25.457426,
-    lng: 30.536133
-}
-
-];
-
-/* =========================
-   GPS
+   حضور = لازم GPS
 ========================= */
 
 navigator.geolocation.getCurrentPosition(
@@ -67,50 +35,32 @@ function(position){
 let lat = position.coords.latitude;
 let lng = position.coords.longitude;
 
-/* =========================
-   إيجاد أقرب موقع
-========================= */
+/* موقع الشركة */
 
-let minDistance = Infinity;
-let nearest = null;
+let companyLat = 25.457426;
+let companyLng = 30.536133;
 
-for(let i = 0; i < locations.length; i++){
+/* حساب المسافة */
 
 let distance = getDistanceFromLatLonInM(
 lat,
 lng,
-locations[i].lat,
-locations[i].lng
+companyLat,
+companyLng
 );
 
-if(distance < minDistance){
-    minDistance = distance;
-    nearest = locations[i];
-}
+/* السماح داخل 200 متر */
 
-console.log(locations[i].name, distance);
-
-}
-
-/* =========================
-   التحقق النهائي
-========================= */
-
-if(minDistance > 200){
+if(distance > 200){
 
 document.getElementById("status").innerHTML =
-"أنت خارج نطاق مواقع العمل";
+"أنت خارج نطاق الشركة";
 
 return;
 
 }
 
-document.getElementById("status").innerHTML =
-"تم تسجيلك في: " + nearest.name;
-
-/* =========================
-   فتح الفورم
-========================= */
+/* رابط الفورم */
 
 let formURL =
 "https://docs.google.com/forms/d/e/1FAIpQLSd5YCyFwOdjrJUIGWk7JsCTzV8lIhqvulKGR21ehL-p2IzQ6w/viewform";
@@ -126,7 +76,8 @@ if(error.code === 1){
 document.getElementById("status").innerHTML =
 "يجب السماح بالموقع GPS";
 
-}else{
+}
+else{
 
 document.getElementById("status").innerHTML =
 "حدث خطأ فى تحديد الموقع";
@@ -143,11 +94,17 @@ document.getElementById("status").innerHTML =
    حساب المسافة
 ========================= */
 
-function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2){
+function getDistanceFromLatLonInM(
+lat1,
+lon1,
+lat2,
+lon2
+){
 
 let R = 6371;
 
 let dLat = deg2rad(lat2-lat1);
+
 let dLon = deg2rad(lon2-lon1);
 
 let a =
@@ -159,10 +116,14 @@ Math.sin(dLon/2);
 
 let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-return c * R * 1000;
+let d = R * c;
+
+return d * 1000;
 
 }
 
 function deg2rad(deg){
+
 return deg * (Math.PI/180);
+
 }
