@@ -7,7 +7,7 @@ document.getElementById("status").innerHTML =
 "جارى التنفيذ...";
 
 /* =========================
-   لو إجازة أو مأمورية
+   إجازة / مأمورية / بدل راحة
 ========================= */
 
 if(
@@ -25,7 +25,33 @@ return;
 }
 
 /* =========================
-   حضور = لازم GPS
+   المواقع المسموح بها
+========================= */
+
+let locations = [
+
+{
+    name: "السنترال الرئيسي",
+    lat: 25.447794,
+    lng: 30.544412
+},
+
+{
+    name: "سنترال باريس",
+    lat:  24.674591,
+    lng:  30.605435
+},
+
+{
+    name: "سنترال المنيره ",
+    lat:  25.617703,
+    lng:  30.645818
+}
+
+];
+
+/* =========================
+   GPS
 ========================= */
 
 navigator.geolocation.getCurrentPosition(
@@ -35,32 +61,44 @@ function(position){
 let lat = position.coords.latitude;
 let lng = position.coords.longitude;
 
-/* موقع الشركة */
+let allowed = false;
 
-let companyLat = 25.447794;
-let companyLng = 30.544412;
+/* =========================
+   فحص كل المواقع
+========================= */
 
-/* حساب المسافة */
+for(let i = 0; i < locations.length; i++){
 
 let distance = getDistanceFromLatLonInM(
 lat,
 lng,
-companyLat,
-companyLng
+locations[i].lat,
+locations[i].lng
 );
 
-/* السماح داخل 200 متر */
+if(distance <= 200){
+    allowed = true;
+    break;
+}
 
-if(distance > 200){
+}
+
+/* =========================
+   خارج كل المواقع
+========================= */
+
+if(!allowed){
 
 document.getElementById("status").innerHTML =
-"أنت خارج نطاق الشركة";
+"أنت خارج نطاق مواقع العمل";
 
 return;
 
 }
 
-/* رابط الفورم */
+/* =========================
+   فتح الفورم
+========================= */
 
 let formURL =
 "https://docs.google.com/forms/d/e/1FAIpQLSd5YCyFwOdjrJUIGWk7JsCTzV8lIhqvulKGR21ehL-p2IzQ6w/viewform";
@@ -76,8 +114,7 @@ if(error.code === 1){
 document.getElementById("status").innerHTML =
 "يجب السماح بالموقع GPS";
 
-}
-else{
+}else{
 
 document.getElementById("status").innerHTML =
 "حدث خطأ فى تحديد الموقع";
@@ -94,17 +131,11 @@ document.getElementById("status").innerHTML =
    حساب المسافة
 ========================= */
 
-function getDistanceFromLatLonInM(
-lat1,
-lon1,
-lat2,
-lon2
-){
+function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2){
 
 let R = 6371;
 
 let dLat = deg2rad(lat2-lat1);
-
 let dLon = deg2rad(lon2-lon1);
 
 let a =
@@ -123,7 +154,5 @@ return d * 1000;
 }
 
 function deg2rad(deg){
-
 return deg * (Math.PI/180);
-
 }
